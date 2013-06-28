@@ -1,0 +1,24 @@
+1    Field does not exist: "errorField" in "test.Demo"
+java.lang.NoSuchFieldException: errorField
+
+2    "field" cannot be associated with null or test.viz.Method
+java.lang.IllegalArgumentException: int can't be visualized by test.viz.Method
+
+3    No such method exists "methodWithOneParameterOneVariable" with parameters " in Class "test.Demo"
+
+4    "methodWith1Parameter1Variable" with parameters ", double" does not exist in Class "test.Demo"
+java.lang.NoSuchMethodException: Method methodWith1Parameter1Variable() missing
+
+5    No such method exists "methodWith1Parameter1Variable" with parameters ", double in Class "test.Demo"
+
+6    "methodWithOneParameterOneVariable" with parameters ", double, int" does not exist in Class "test.Demo"
+java.lang.NoSuchMethodException: Method methodWithOneParameterOneVariable() missing
+
+7    No such method exists "methodWithOneParameterOneVariable" with parameters ", double, int in Class "test.Demo"
+
+8    Visualization class "null/test.viz.Test2" for "test.Demo" cannot be found
+java.lang.ClassNotFoundException: Class test.viz.Test2 missing
+
+9    Class "test.Demo1" not found
+java.lang.ClassNotFoundException: test.Demo1
+

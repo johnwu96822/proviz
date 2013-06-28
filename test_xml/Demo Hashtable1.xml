@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProViz>
+  <type name="test.Test">
+    <field name="t3" />
+    <method name="test.Test:main(java.lang.String[])">
+      <var name="t2">
+        <viz vc="1D" />
+      </var>
+      <var name="t1">
+        <viz vc="1D" />
+      </var>
+      <var name="table3" />
+      <var name="table2" />
+      <param name="args" />
+      <var name="table">
+        <viz vc="1D" />
+      </var>
+      <var name="ari">
+        <viz vc="1D" />
+      </var>
+    </method>
+  </type>
+  <type name="test.Test3" />
+</ProViz>
+

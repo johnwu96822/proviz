@@ -1,0 +1,18 @@
+<soft-viz>
+  <type name="test.ideal.Demo">
+    <viz class="test.viz.Test"/>
+    <viz class="test.viz.Object"/>
+    <field name="field" viz="test.viz.Int"/>
+    <method name="methodWithOneParameterOneVariable(double)" viz="test.viz.Method">
+      <var name="i" viz="test.viz.Int"/>
+      <var name="param" viz="test.viz.Float"/>
+    </method>
+    <method name="methodWithTwoParametersTwoVariables(float,char)" viz="test.viz.Method">
+      <var name="i" viz="test.viz.Int"/>
+      <var name="param2" viz="test.viz.Char"/>
+      <var name="label" viz="test.viz.String"/>
+      <var name="j" viz="test.viz.Int"/>
+      <var name="param1" viz="test.viz.Float"/>
+    </method>
+  </type>
+</soft-viz>

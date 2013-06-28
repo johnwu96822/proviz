@@ -1,0 +1,17 @@
+<type name="test.Demo" viz="test.viz.Test">
+  <field name="field" viz="test.viz.Int"/>
+  <method name="methodWithOneParameterOneVariable(double)" viz="test.viz.Method">
+    <var name="i" viz="test.viz.Int"/>
+    <var name="param">
+      <viz class="test.viz.Float"/>
+      <viz class="test.viz.Int"/>
+    </var>
+  </method>
+  <method name="methodWithTwoParametersTwoVariables(float,char)" viz="test.viz.Method">
+    <var name="i" viz="test.viz.Int"/>
+    <var name="param2" viz="test.viz.Char"/>
+    <var name="label" viz="test.viz.String"/>
+    <var name="j" viz="test.viz.Int"/>
+    <var name="param1" viz="test.viz.Float"/>
+  </method>
+</type>

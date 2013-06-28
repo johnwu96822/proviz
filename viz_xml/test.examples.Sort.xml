@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProViz>
+  <type name="test.examples.Sort">
+    <viz vc="1D" />
+    <field name="array">
+      <viz vc="viz.painters.lib.ArrayPainter_Painter" />
+    </field>
+    <method name="test.examples.Sort:swap(int,int)">
+      <viz vc="test.painters.method.SwapPainter" />
+      <var name="temp" />
+      <param name="j" />
+      <param name="i" />
+    </method>
+    <method name="test.examples.Sort:getArray()" />
+    <method name="test.examples.Sort:randomize(int[])">
+      <var name="random" />
+      <var name="rand" />
+      <var name="i" />
+      <param name="array">
+        <viz vc="viz.painters.lib.ArrayPainter_Draw" />
+        <viz vc="viz.painters.lib.ArrayPainter_Comp" />
+      </param>
+    </method>
+    <method name="test.examples.Sort:&lt;init&gt;(int)">
+      <var name="i" />
+      <param name="size" />
+    </method>
+    <method name="test.examples.Sort:printArray(int[])">
+      <param name="array" />
+    </method>
+    <method name="test.examples.Sort:sort()" />
+  </type>
+</ProViz>
+

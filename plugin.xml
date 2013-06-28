@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="viz"
+            name="ProViz"/>
+      <view
+            category="viz"
+            class="viz.views.eclipse.VizAnnotationExplorer"
+            icon="icons/sample.gif"
+            id="viz.views.eclipse.VizAnnotationExplorer"
+            name="Viz Annotation Explorer"/>
+      <view
+            category="viz"
+            class="viz.views.eclipse.VizSetEditor"
+            icon="icons/sample.gif"
+            id="viz.views.eclipse.VizSetEditor"
+            name="ProViz Editor"/>
+      <view
+            category="viz"
+            class="viz.views.eclipse.AWTView"
+            icon="icons/sample.gif"
+            id="viz.views.eclipse.AWTViewer"
+            name="ProViz View"/>
+      <view
+            category="viz"
+            class="test.view.VizRuntimeView"
+            icon="icons/sample.gif"
+            id="test.view.VizRuntimeView"
+            name="VizRuntimeView"
+            restorable="true"/>
+      <view
+            category="viz"
+            class="test.view.PainterView"
+            icon="icons/sample.gif"
+            id="test.view.PainterView"
+            name="PainterView"
+            restorable="true"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="viz.views.eclipse.VizAnnotationExplorer"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="viz.views.eclipse.VizSetEditor"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="test.view.VizRuntimeView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+         <view
+               id="viz.views.eclipse.AWTViewer"
+               relative="org.eclipse.debug.ui.VariableView"
+               relationship="stack"
+               visible="true"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+         <view
+               id="test.view.PainterView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>      
+   </extension>
+
+</plugin>

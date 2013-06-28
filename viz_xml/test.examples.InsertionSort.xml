@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProViz>
+  <type name="test.examples.InsertionSort">
+    <method name="test.examples.InsertionSort:main(java.lang.String[])">
+      <param name="args" />
+      <var name="bs">
+        <viz vc="test.painters.SortPainter" />
+      </var>
+    </method>
+    <method name="test.examples.InsertionSort:sort()">
+      <var name="j">
+        <viz vc="test.painters.IndexPainter" />
+      </var>
+      <var name="i">
+        <viz vc="test.painters.IndexPainter" />
+      </var>
+    </method>
+    <method name="test.examples.InsertionSort:&lt;init&gt;(int)">
+      <param name="size" />
+    </method>
+  </type>
+</ProViz>
+

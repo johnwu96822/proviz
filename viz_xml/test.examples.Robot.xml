@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProViz>
+  <type name="test.examples.Robot">
+    <field name="leftArm">
+      <viz vc="test.painters.robot.RobotPainter_Appendage" />
+    </field>
+    <field name="leftLeg">
+      <viz vc="test.painters.robot.RobotPainter_Appendage" />
+    </field>
+    <field name="rightArm">
+      <viz vc="test.painters.robot.RobotPainter_Appendage" />
+    </field>
+    <field name="head">
+      <viz vc="test.painters.robot.RobotPainter_Head_Image" />
+    </field>
+    <field name="rightLeg">
+      <viz vc="test.painters.robot.RobotPainter_Appendage" />
+    </field>
+    <method name="test.examples.Robot:walk(int)">
+      <param name="distance" />
+    </method>
+    <method name="test.examples.Robot:run(int,int)">
+      <param name="distance" />
+      <param name="speed" />
+    </method>
+    <method name="test.examples.Robot:jump(int)">
+      <param name="height" />
+    </method>
+    <method name="test.examples.Robot:main(java.lang.String[])">
+      <var name="testRobo">
+        <viz vc="test.painters.Painter_JIcon" />
+      </var>
+      <param name="args" />
+      <var name="robot">
+        <viz vc="test.painters.robot.RobotPainter_Main" />
+      </var>
+    </method>
+  </type>
+  <type name="test.examples.Head">
+    <field name="degree" />
+    <method name="test.examples.Head:turnLeft()" />
+    <method name="test.examples.Head:turnRight()" />
+  </type>
+  <type name="test.examples.Arm">
+    <field name="upper" />
+    <field name="length" />
+    <field name="angle" />
+    <method name="test.examples.Arm:&lt;init&gt;(int,int,int)">
+      <param name="upper" />
+      <param name="length" />
+      <param name="angle" />
+    </method>
+    <method name="test.examples.Arm:straighten(int)">
+      <param name="degree" />
+    </method>
+    <method name="test.examples.Arm:bend(int)">
+      <param name="degree" />
+    </method>
+  </type>
+  <type name="test.examples.Leg">
+    <method name="test.examples.Leg:&lt;init&gt;(int,int,int)">
+      <param name="upper" />
+      <param name="length" />
+      <param name="angle" />
+    </method>
+  </type>
+</ProViz>
+

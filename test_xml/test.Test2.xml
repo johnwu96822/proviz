@@ -1,0 +1,23 @@
+<type name="test.Test2">
+  <method name="methodWith2Params2Vars(float,char)" viz="test.viz.Method">
+    <var name="i" viz="test.viz.Int"/>
+    <var name="param2" viz="test.viz.Char"/>
+    <var name="label" viz="test.viz.String"/>
+    <var name="j" viz="test.viz.Int"/>
+    <var name="param1" viz="test.viz.Float"/>
+  </method>
+  <type name="test.Test2.Inner2OverloadedMethodsOneWith1ParamOneWith1Var" viz="test.viz.InnerClassObject">
+    <method name="methodOverloaded(double)">
+      <var name="param" viz="test.viz.Float"/>
+    </method>
+    <method name="methodOverloaded()" viz="test.viz.Method"/>
+  </type>
+  <type name="test.Test2.InnerOnlyClass" viz="test.viz.InnerClassObject"/>
+  <type name="test.Test2.Inner1Field1MethodWith1Param1Var" viz="test.viz.InnerClassObject">
+    <field name="field1" viz="test.viz.String"/>
+    <method name="method1With1Param1Var(double)" viz="test.viz.Method">
+      <var name="i" viz="test.viz.Int"/>
+      <var name="param" viz="test.viz.Float"/>
+    </method>
+  </type>
+</type>

@@ -1,0 +1,128 @@
+<soft-viz>
+  <!-- any number of viz-def tags that can be referenced by id -->
+  <viz-def id="int" class="test.viz.Int"/>
+  <viz-def id="float" class="test.viz.Float"/>
+  <!-- any number of topmost type tags -->
+  <type name="test.Demo">
+    <!-- any number of visualization classes for the type, 
+         the first one is considered default, user can select others
+         if there is only one, it can be specified directly as an 
+         attribute to type tag  -->
+    <viz class="test.viz.Test"/>
+    <!-- Non-existant visualization class -->
+    <viz class="test.viz.Test2"/>
+    <!-- Non-existant visualization class complete--> 
+    <!-- any number of field tags, each must correspond to a field 
+         within the enclosing type -->
+    <!-- error field does not exist-->
+    <field name = "errorField">
+    	<viz class = "test.viz.Int"/>
+    </field>
+    <!-- error field complete -->
+    <field name="field">
+      <!-- any number of visualization classes for the field, 
+           the first one is considered default, user can select others
+           if there is only one, it can be specified directly as an 
+           attribute to field tag  -->
+      <viz class = "test.viz.Int"/>
+      <!-- Wrong visualization -->
+      <viz class = "test.viz.Method"/>
+    </field>
+    <!-- valid method no visualization specified -->
+    <method name="methodWithOneParameterOneVariable">
+    </method>
+    <!-- valid method no visualization specified complete -->
+    <!-- invalid method -->
+    <method name="methodWith1Parameter1Variable">
+      <!-- any number of visualization classes for the method, 
+           the first one is considered default, user can select others
+           if there is only one, it can be specified directly as an 
+           attribute to method tag  -->
+      <viz class="test.viz.Method"/>
+      <!-- any number of var tags, each must correspond to a parameter 
+           within the signature of the enclosing method or to a local 
+           variable; note that we don't distinguish (yet) among variables 
+           with the same name declared in different code blocks -->
+      <var name="i">
+      	<viz ref="int"/>
+      </var>
+      <param name="param" type="double">
+        <!-- any number of visualization classes for the parameter or 
+             local variable, the first one is considered default, 
+             user can select others, if there is only one, it can be 
+             specified directly as an attribute to var tag  -->
+        <viz class="test.viz.Float"/>
+        <viz ref="int"/>
+      </param>
+    </method>
+    <!-- invalid method complete -->
+    <!-- invalid method as the second parameter is specified -->
+    <method name="methodWithOneParameterOneVariable">
+      <!-- any number of visualization classes for the method, 
+           the first one is considered default, user can select others
+           if there is only one, it can be specified directly as an 
+           attribute to method tag  -->
+      <viz class="test.viz.Method"/>
+      <!-- any number of var tags, each must correspond to a parameter 
+           within the signature of the enclosing method or to a local 
+           variable; note that we don't distinguish (yet) among variables 
+           with the same name declared in different code blocks -->
+      <var name="i">
+      	<viz ref="int"/>
+      </var>
+      <!-- invalid variable cannot be checked-->
+      <var name = "mu">
+      	<viz ref ="int"/>
+      </var>
+      <!-- invalid variable complete -->
+      <param name="param" type="double">
+        <!-- any number of visualization classes for the parameter or 
+             local variable, the first one is considered default, 
+             user can select others, if there is only one, it can be 
+             specified directly as an attribute to var tag  -->
+        <viz class="test.viz.Float"/>
+        <viz ref="int"/>
+      </param>
+      <!-- invalid paramater -->
+      <param name = "param1" type="int" viz="test.viz.Float"/>
+      <!-- invalid paramater complete-->
+    </method>
+    <!-- invalid method complete -->
+   <!-- example of direct specification of default visualization class
+         as an attribute to a method tag  -->
+    <method name="methodWithTwoParametersTwoVariables" viz="test.viz.Method">
+      <!-- example of direct specification of default visualization class
+           as an attribute to a var tag  -->
+      <param name="param1" type= "float" viz-ref="float"/>
+      <param name="param2" type= "char" viz="test.viz.Char"/>
+      <var name="label" viz="test.viz.String"/>
+      <var name="i" viz="test.viz.Int"/>
+      <var name="j" viz="test.viz.Int"/>
+    </method>
+   </type>
+   <!-- invalid class -->
+   <type name = "test.Demo1">
+	   	<!-- any number of visualization classes for the type, 
+	         the first one is considered default, user can select others
+	         if there is only one, it can be specified directly as an 
+	         attribute to type tag  -->
+	    <viz class="test.viz.Test"/>
+	    <!-- any number of field tags, each must correspond to a field 
+	         within the enclosing type -->
+	    <!-- error field does not exist-->
+	    <field name = "errorField">
+	    	<viz class = "test.viz.Int"/>
+	    </field>
+	    <!-- error field complete -->
+	    <field name="field">
+	      <!-- any number of visualization classes for the field, 
+	           the first one is considered default, user can select others
+	           if there is only one, it can be specified directly as an 
+	           attribute to field tag  -->
+	      <viz class = "test.viz.Int"/>
+	      <!-- Wrong visualization -->
+	      <viz class = "test.viz.Method"/>
+	    </field>
+	</type>
+	<!-- invalid Class complete -->
+  </soft-viz>

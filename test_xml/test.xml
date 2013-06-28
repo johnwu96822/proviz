@@ -1,0 +1,86 @@
+<soft-viz>
+  <!-- any number of viz-def tags that can be referenced by id -->
+  <viz-def id="float" class="test.IntViz"/>
+  <viz-def id="int" class="test.FloatViz"/>
+  <!-- any number of topmost type tags -->
+  <type name="test.Demo">
+    <!-- any number of visualization classes for the type, 
+         the first one is considered default, user can select others
+         if there is only one, it can be specified directly as an 
+         attribute to type tag  -->
+    <viz class="test.viz.Test"/>
+    <viz class="test.viz.Test2"/>
+    <!-- any number of field tags, each must correspond to a field 
+         within the enclosing type -->
+    <field name="field"/>
+      <!-- any number of visualization classes for the field, 
+           the first one is considered default, user can select others
+           if there is only one, it can be specified directly as an 
+           attribute to field tag  -->
+      <viz class="test.IntViz"/>
+    </field>
+    <!-- any number of method tags, each must correspond to a method 
+         within the enclosing type -->
+    <method name="method1">
+      <!-- any number of visualization classes for the method, 
+           the first one is considered default, user can select others
+           if there is only one, it can be specified directly as an 
+           attribute to method tag  -->
+      <viz class="test.MethodViz"/>
+      <viz class="test.MethodViz2"/>
+      <!-- any number of var tags, each must correspond to a parameter 
+           within the signature of the enclosing method or to a local 
+           variable; note that we don't distinguish (yet) among variables 
+           with the same name declared in different code blocks -->
+      <var name="param">
+        <!-- any number of visualization classes for the parameter or 
+             local variable, the first one is considered default, 
+             user can select others, if there is only one, it can be 
+             specified directly as an attribute to var tag  -->
+        <viz class="test.FloatViz"/>
+        <viz ref="float"/>
+        <viz class="test.FloatViz3"/>
+      </var>
+      <var name="i" viz-ref="float"/>
+    </method>
+    <!-- example of direct specification of default visualization class
+         as an attribute to a method tag  -->
+    <method name="method2" viz="test.MethodViz">
+      <!-- example of direct specification of default visualization class
+           as an attribute to a var tag  -->
+      <var name="param1" viz="test.FloatViz"/>
+      <var name="param2" viz="test.CharViz"/>
+      <var name="label" viz="test.StringViz"/>
+      <var name="i" viz="test.IntViz"/>
+      <var name="j" viz="test.IntViz"/>
+    </method>
+  </type>
+  <!-- example of type tag without any specification of a visualization class
+       i.e.  the default visualization will be used, needed for special 
+       specification of a visualization in nested tags -->
+  <type name="test.Test2">
+    <method name="methodWith2Params2Vars" viz="test.MethodViz">
+      <var name="param1" viz="test.FloatViz"/>
+      <var name="param2" viz="test.CharViz"/>
+      <var name="label" viz="test.StringViz"/>
+      <var name="i" viz="test.IntViz"/>
+      <var name="j" viz="test.IntViz"/>
+    </method>
+    <!-- example of inner type specifications -->
+    <type name="test.Test2.Inner1Field1MethodWith1Param1Var" viz="test.InnerClassViz">
+      <field name="field1" viz="test.IntViz"/>
+      <method name="method1With1Param1Var" viz="test.MethodViz">
+        <var name="param" viz="test.FloatViz"/>
+        <var name="i" viz="test.IntViz"/>
+      </method> 
+    </type>
+    <type name="test.Test2.Inner2MethodsOneWith1ParamOneWith1Var" viz="test.InnerClassViz">
+      <method name="methodOverloaded" viz="test.MethodViz"/>
+      <method name="methodOverloaded">
+        <var name="param" viz="test.FloatViz"/>
+      </method>
+    </type>
+    <type name="test.Test2.InnerOnlyClass" viz="test.InnerClassViz"/>
+  </type>
+</soft-viz>
+

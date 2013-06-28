@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soft-viz>
+  <type name="test.ideal.Test2">
+    <method name="test.ideal.Test2:methodWith2Params2Vars(float,char)">
+      <viz vc="test.viz.Method" />
+      <var name="i">
+        <viz vc="test.viz.Int" />
+      </var>
+      <param name="param2">
+        <viz vc="test.viz.Int" />
+        <viz vc="test.viz.Char" />
+        <viz vc="test.viz.String" />
+      </param>
+      <var name="label">
+        <viz vc="test.viz.String" />
+      </var>
+      <var name="j">
+        <viz vc="test.viz.Int" />
+      </var>
+      <param name="param1">
+        <viz vc="test.viz.Float" />
+        <viz vc="test.viz.String" />
+      </param>
+    </method>
+    <type name="test.ideal.Test2$InnerOnlyClass">
+      <viz vc="test.viz.InnerClassObject" />
+    </type>
+    <type name="test.ideal.Test2$Inner2OverloadedMethodsOneWith1ParamOneWith1Var">
+      <viz vc="test.viz.InnerClassObject" />
+      <method name="test.ideal.Test2$Inner2OverloadedMethodsOneWith1ParamOneWith1Var:methodOverloaded()">
+        <viz vc="test.viz.Method" />
+      </method>
+      <method name="test.ideal.Test2$Inner2OverloadedMethodsOneWith1ParamOneWith1Var:methodOverloaded(double)">
+        <param name="param">
+          <viz vc="test.viz.Float" />
+        </param>
+      </method>
+      <type name="test.ideal.Test2$Inner2OverloadedMethodsOneWith1ParamOneWith1Var$InnerInnerClass2">
+        <method name="test.ideal.Test2$Inner2OverloadedMethodsOneWith1ParamOneWith1Var$InnerInnerClass2:test1()">
+          <type name="test.ideal.Test2$1InnerInnerClass3">
+            <method name="test.ideal.Test2$1InnerInnerClass3:test2()">
+              <var name="i">
+                <viz vc="test.viz.Int" />
+              </var>
+            </method>
+          </type>
+        </method>
+      </type>
+      <type name="test.ideal.Test2$Inner2OverloadedMethodsOneWith1ParamOneWith1Var$InnerInnerClass">
+        <viz vc="test.viz.InnerClassObject" />
+      </type>
+    </type>
+    <type name="test.ideal.Test2$Inner1Field1MethodWith1Param1Var">
+      <viz vc="test.viz.InnerClassObject" />
+      <field name="field1">
+        <viz vc="test.viz.Int" />
+      </field>
+      <method name="test.ideal.Test2$Inner1Field1MethodWith1Param1Var:method1With1Param1Var(double)">
+        <viz vc="test.viz.Method" />
+        <var name="i">
+          <viz vc="test.viz.Int" />
+        </var>
+        <param name="param">
+          <viz vc="test.viz.Float" />
+          <viz vc="test.viz.Int" />
+          <viz vc="test.viz.Char" />
+        </param>
+      </method>
+      <method name="test.ideal.Test2$Inner1Field1MethodWith1Param1Var:method1With1Param1Var(double,int)">
+        <viz vc="test.viz.Method" />
+        <var name="i">
+          <viz vc="test.viz.Int" />
+        </var>
+        <param name="param">
+          <viz vc="test.viz.Float" />
+        </param>
+      </method>
+    </type>
+  </type>
+</soft-viz>
+

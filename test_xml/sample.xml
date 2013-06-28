@@ -1,0 +1,44 @@
+<soft-viz>
+  <type name="test.Demo">
+    <viz class="test.TestViz"/>
+    <viz class="test.TestViz2"/>
+    <field name="field"/>
+      <viz class="test.IntViz"/>
+    </field>
+    <method name="method1" viz="test.MethodViz">
+      <var name="param" viz="test.FloatViz"/>
+      <var name="i" viz="test.IntViz"/>
+    </method>
+    <method name="method2" viz="test.MethodViz">
+      <var name="param1" viz="test.FloatViz"/>
+      <var name="param2" viz="test.CharViz"/>
+      <var name="label" viz="test.StringViz"/>
+      <var name="i" viz="test.IntViz"/>
+      <var name="j" viz="test.IntViz"/>
+    </method>
+  </type>
+  <type name="test.Test2">
+    <method name="methodWith2Params2Vars" viz="test.MethodViz">
+      <var name="param1" viz="test.FloatViz"/>
+      <var name="param2" viz="test.CharViz"/>
+      <var name="label" viz="test.StringViz"/>
+      <var name="i" viz="test.IntViz"/>
+      <var name="j" viz="test.IntViz"/>
+    </method>
+    <type name="test.Test2.Inner1Field1MethodWith1Param1Var" viz="test.InnerClassViz">
+      <field name="field1" viz="test.IntViz"/>
+      <method name="method1With1Param1Var" viz="test.MethodViz">
+        <var name="param" viz="test.FloatViz"/>
+        <var name="i" viz="test.IntViz"/>
+      </method>
+    </type>
+    <type name="test.Test2.Inner2MethodsOneWith1ParamOneWith1Var" viz="test.InnerClassViz">
+      <method name="methodOverloaded" viz="test.MethodViz"/>
+      <method name="methodOverloaded">
+        <var name="param" viz="test.FloatViz"/>
+      </method>
+    </type>
+    <type name="test.Test2.InnerOnlyClass" viz="test.InnerClassViz"/>
+  </type>
+</soft-viz>
+

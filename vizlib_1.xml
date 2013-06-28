@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProViz>
+  <type name="java.lang.String">
+    <viz vc="viz.painters.lib.StringPainter" />
+  </type>
+  <type name="int">
+    <viz vc="viz.painters.lib.IntPainter" />
+  </type>
+  <!--type name="int[]">
+    <viz vc="viz.painters.lib.array.ArrayPainter" />
+  </type-->
+  <type name="java.util.LinkedList">
+    <viz vc="viz.painters.lib.IntPainter" />
+  </type>
+  <type name="java.util.Hashtable&lt;K,V&gt;">
+    <viz vc="viz.painters.lib.hashtable.HashtablePainter" />
+    <field name="table">
+      <viz vc="viz.painters.DummyPainter" /><!--lib.array.ArrayPainter" /-->
+    </field>
+  </type>
+  <type name="java.util.Hashtable$Entry&lt;K,V&gt;[]">
+    <field name="[]">
+      <viz vc="1D" />
+    </field>
+  </type>
+  <type name="java.util.Hashtable$Entry&lt;K,V&gt;">
+    <viz vc="viz.painters.lib.hashtable.HEntryPainter" />
+    <field name="key">
+      <viz vc="1D" />
+    </field>
+    <field name="value">
+      <viz vc="1D" />
+    </field>
+    <field name="next">
+      <viz vc="1D" />
+    </field>
+  </type>
+</ProViz>
+

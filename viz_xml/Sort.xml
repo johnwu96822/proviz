@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProViz>
+  <type name="test.examples.BubbleSort">
+    <method name="test.examples.BubbleSort:sort()">
+      <var name="j">
+        <viz vc="test.painters.IndexPainter" />
+        <listenTo>i</listenTo>
+      </var>
+      <var name="i">
+        <viz vc="test.painters.IndexPainter" />
+        <listenTo>j</listenTo>
+      </var>
+    </method>
+    <method name="test.examples.BubbleSort:&lt;init&gt;(int)">
+      <param name="size" />
+    </method>
+    <method name="test.examples.BubbleSort:main(java.lang.String[])">
+      <param name="args" />
+      <var name="list">
+        <viz vc="test.painters.LinkedListPainter_Painter" />
+      </var>
+      <var name="bs">
+        <viz vc="test.painters.SortPainter" />
+      </var>
+    </method>
+  </type>
+  <type name="test.examples.InsertionSort">
+    <method name="test.examples.InsertionSort:main(java.lang.String[])">
+      <param name="args" />
+      <var name="bs">
+        <viz vc="test.painters.SortPainter" />
+      </var>
+    </method>
+    <method name="test.examples.InsertionSort:sort()">
+      <var name="j">
+        <viz vc="test.painters.IndexPainter" />
+      </var>
+      <var name="i">
+        <viz vc="test.painters.IndexPainter" />
+      </var>
+    </method>
+    <method name="test.examples.InsertionSort:&lt;init&gt;(int)">
+      <param name="size" />
+    </method>
+  </type>
+  <type name="test.examples.Sort">
+    <viz vc="1D" />
+    <field name="array">
+      <viz vc="viz.painters.lib.ArrayPainter_Painter" />
+    </field>
+    <method name="test.examples.Sort:swap(int,int)">
+      <viz vc="test.painters.method.SwapPainter" />
+      <var name="temp" />
+      <param name="j" />
+      <param name="i" />
+    </method>
+    <method name="test.examples.Sort:getArray()" />
+    <method name="test.examples.Sort:randomize(int[])">
+      <var name="random" />
+      <var name="rand" />
+      <var name="i" />
+      <param name="array">
+        <viz vc="viz.painters.lib.ArrayPainter_Draw" />
+        <viz vc="viz.painters.lib.ArrayPainter_Comp" />
+      </param>
+    </method>
+    <method name="test.examples.Sort:&lt;init&gt;(int)">
+      <var name="i" />
+      <param name="size" />
+    </method>
+    <method name="test.examples.Sort:printArray(int[])">
+      <param name="array" />
+    </method>
+    <method name="test.examples.Sort:sort()" />
+  </type>
+</ProViz>
+
