@@ -137,7 +137,7 @@ public class VizPainterManager implements IMethodStateReactor {
 		IVizVariable parentVar = field.getParent();
 	//TODO extend the search to fields of fields
 		
-	//Find the FieldViz under a local variable
+	//Find the customized FieldViz under a local variable
 		if (parentVar.isLocalVariable()) {
 	//Look if the parent local variable has this field annotated  
 			VariableViz parentAsso = VizMapModel.getInstance().findVariableViz_runtime(
@@ -154,20 +154,20 @@ public class VizPainterManager implements IMethodStateReactor {
 					rv = parentAsso.getFieldViz(field.getName());
 				}
 				if (rv != null) {
-					ProViz.println("Custom field viz under a local variable: " + rv.getCurrentViz());
+					ProViz.println("Customized FieldViz under a local variable: " + rv.getCurrentViz());
 					return rv;
 				}
 			}
 		} else {
 	//parentVar is a field variable
-	//Find the FieldViz of parentVar and see if there is a custom FieldViz under it for the
+	//Find the FieldViz of parentVar and see if there is a customized FieldViz under it for the
 	//the current field
 			FieldViz parentField = VizMapModel.getInstance().findFieldViz_runtime(
 					parentVar.getParent().getActualType(), parentVar.getName());
 			if (parentField != null) {
 				rv = parentField.getFieldViz(field.getName());
 				if (rv != null) {
-					ProViz.println("Custom field viz under a field: " + rv.getCurrentViz());
+					ProViz.println("Customized FieldViz under a field: " + rv.getCurrentViz());
 					return rv;
 				}
 			}
@@ -187,7 +187,7 @@ public class VizPainterManager implements IMethodStateReactor {
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				//ProViz.errprintln("No class for: " + parentType);
+				ProViz.errprintln("No class for: " + parentVar.getActualType());
 			}
 		}
 		return rv;
@@ -201,12 +201,20 @@ public class VizPainterManager implements IMethodStateReactor {
 	 *   
 	 * The new stack frame contains painters (assuming they are annotated with painters):
 	 * this
-	 * this.field1
-	 * this.field2
-	 * ...
+	 *   this.field1
+	 *   this.field2
+	 *   ...
 	 * local var1
 	 * local var2
 	 * ...
+	 * 
+	 * Reference variables could have field variables as descendants
+	 * 
+	 * One line explanation for VOO and VOV
+	 * VOO: One object is painted by one painter, resulting in many aliasing
+	 *      variables using one painter
+	 * VOV: One variable is painted by one painter, resulting in many painters
+	 *      painting one object
 	 * 
 	 * @param newVar
 	 * @param topFrame
@@ -219,7 +227,8 @@ public class VizPainterManager implements IMethodStateReactor {
 		this.registerListeners(var, waitingList);
 		//boolean isArrayField = false;
 		if (!var.isLocalVariable()) {
- //var is a field
+  //var is a field, and if the parent variable has no painter, var and its
+	//descendants should not have painters, either
 			if (parentPainter == null) {
 				if (var.isObject()) {
 					this.registerListenersForFieldsWithNoPainter(var, waitingList);
@@ -232,8 +241,9 @@ public class VizPainterManager implements IMethodStateReactor {
 			}*/
 		}
 		Association vizBase = getAssociation(var/*, parentPainter*/);
-		//TODO 9/7/2010 bug here for array fields. vizBase goes through, but the viz count is 0
+//TODO 9/7/2010 bug here for array fields. vizBase goes through, but the viz count is 0
 		if (/*!isArrayField && */(vizBase == null || vizBase.getVizCount() == 0)) {
+	//The variable is not annotated with a painter
 			if (var.isObject()) {
 				this.registerListenersForFieldsWithNoPainter(var, waitingList);
 			}
@@ -243,10 +253,10 @@ public class VizPainterManager implements IMethodStateReactor {
 	//------------------------------------------------------------------------------
 	//------------------------------ VOO -------------------------------------------
 	//------------------------------------------------------------------------------
-	//Field painters do not go through this process (VBV for field painters)
+	//Field painters do not go through this process (VOV for field painters)
 	//TODO 11/26/2010 Disabled VOO
 		if (var.isObject() && var.isLocalVariable() && !var.isNull()) {
-	//Find if a compatible painter that is already visualizing this object
+	//Find if a compatible painter is already visualizing this object
 			List<Painter> pList = this.uniqueObjectTable.get(var.getUniqueObjectID());
 			if (pList != null) {
 				for (Painter tempPainter : pList) {
@@ -301,13 +311,11 @@ public class VizPainterManager implements IMethodStateReactor {
 					for (IVizVariable field : var.getFields()) {
 						this.processVariableAndCreatePainter(field, painter, waitingList);//, currentStackFrame, waitingList);
 					}
-				}
-				else {
+				}	else {
 					this.registerListenersForFieldsWithNoPainter(var, waitingList);
 				}
 				this.registerFieldListeners(painter);
-			}
-			else {
+			}	else {
 				this.primitivePainters.put(var, painter);
 			}
 	//VPM only calls addToCanvas() on painters for root/local variables
@@ -317,8 +325,7 @@ public class VizPainterManager implements IMethodStateReactor {
 				}
 				painter.addToCanvas();
 			}
-		}
-		else {
+		}	else {
 	//Painter creation is unsuccessful; so create dependency for the variable
 			if (var.isObject()) {
 				this.registerListenersForFieldsWithNoPainter(var, waitingList);
@@ -347,8 +354,7 @@ public class VizPainterManager implements IMethodStateReactor {
 				vizBase = VizMapModel.getInstance().findVariableViz_runtime(
 						var.getStackFrame().getMethodID(), var.getName());
 			}
-		}
-		else {
+		}	else {
   //var is a field
 			IVizVariable parentVar = var.getParent();
 			String parentActualType = parentVar.getActualType();
@@ -362,8 +368,7 @@ public class VizPainterManager implements IMethodStateReactor {
 					if (localVarViz != null) {
 						vizBase = localVarViz.getFieldViz(PainterFactory.ARRAY_KEYWORD);
 					}
-				}
-				else {
+				}	else {
 	//Parent variable is a field
 					FieldViz parentField = VizMapModel.getInstance().findFieldViz_runtime(
 							parentVar.getParent().getActualType(), parentVar.getName());
@@ -387,8 +392,7 @@ public class VizPainterManager implements IMethodStateReactor {
 				if (vizBase == null) {
 					vizBase = arrayField;
 				}
-			}
-			else {
+			}	else {
 	//-------------------------- Non-array fields ------------------------------
 	//4.19.2010 Can handle inheritance
 				vizBase = this.findFieldViz(var, true);
@@ -422,8 +426,7 @@ public class VizPainterManager implements IMethodStateReactor {
 	private void addToUniqueIDTable(Painter painter) {
 		if (this.uniqueObjectTable.containsKey(painter.getUniqueID())) {
 			this.uniqueObjectTable.get(painter.getUniqueID()).add(painter);
-		}
-		else {
+		}	else {
 			List<Painter> list = new ArrayList<Painter>();
 			list.add(painter);
 			this.uniqueObjectTable.put(painter.getUniqueID(), list);
@@ -450,7 +453,8 @@ public class VizPainterManager implements IMethodStateReactor {
 	}
 	
 	/**
-	 * For the given VizVariable, recursively register listeners for all its field variable trees.
+	 * For the given VizVariable, recursively register listeners for all its descendants.
+	 * The variable itself, however, is not registered here.
 	 * @param vvar
 	 */
 	private void registerListenersForFieldsWithNoPainter(IVizVariable vvar, 
@@ -570,8 +574,7 @@ public class VizPainterManager implements IMethodStateReactor {
 		MethodAction action = null; 
 		if (isBefore) {
 			action = mPainter.getAndRemoveBeforeAction(name, change);
-		}
-		else {
+		}	else {
 			action = mPainter.getAndRemoveAfterAction(name, change);
 		}
 		if (action != null) {
@@ -728,8 +731,7 @@ public class VizPainterManager implements IMethodStateReactor {
 					previousPainter.removeVariableToThisPainter(var);
 					this.processVariableAndCreatePainter(var, previousPainter.getParent(), waitingList);
 					continue;
-				}
-				else {
+				}	else {
 	//The previous painter still paints the variable, just update its place in unique ID table
 					this.removePainterFromUniqueIDTable(previousPainter);
 				}
@@ -767,8 +769,7 @@ public class VizPainterManager implements IMethodStateReactor {
 						originalParent.addOrReplaceFieldPainter(var.getName(), replacementPainter);
 					}
 					continue;
-				}
-				else {
+				}	else {
 					if (previousPainter.getVariablesToThisPainter().size() == 1) {
 						//TODO
 						if (cVar.getEventType() == Change.NULL_TO_OBJ && !this.shouldUseStringPainter(var.getActualType())) {
@@ -776,8 +777,7 @@ public class VizPainterManager implements IMethodStateReactor {
 							Association asso = this.getAssociation(var);
 							if (asso == null || asso.getVizCount() == 0) {
 								ProViz.errprintln("VPM changed variable, NULL_TO_OBJ, annotation not found in Vizes");
-							}
-							else if (asso.getCurrentViz().getPainterName().equalsIgnoreCase(VizMapModel.DEFAULT_TYPE)) {
+							}	else if (asso.getCurrentViz().getPainterName().equalsIgnoreCase(VizMapModel.DEFAULT_TYPE)) {
 								String painterName = PainterFactory.getVisualizationName(VizMapModel.DEFAULT_TYPE, var);
 								if (!previousPainter.getClass().getName().equals(painterName)) {
 									boolean shouldSwitch = true;
@@ -806,14 +806,12 @@ public class VizPainterManager implements IMethodStateReactor {
 		//Process new fields of var
 								this.processVariableAndCreatePainter(fieldVar, previousPainter, waitingList);//, var.getStackFrame(), waitingList);
 							}
-						}
-						else {
+						}	else {
 							this.registerListenersForFieldsWithNoPainter(var, waitingList);
 						}
 						this.registerFieldListeners(previousPainter);
 						this.removePainterFromUniqueIDTable(previousPainter);
-					}
-					else if (previousPainter.getVariablesToThisPainter().size() > 1) {
+					}	else if (previousPainter.getVariablesToThisPainter().size() > 1) {
 	//previousPainter is painting other variables as well. So dis-associate it with var and re-create a new
 	//painter for it
 						Painter parentPainter = previousPainter.getParent();
@@ -821,13 +819,11 @@ public class VizPainterManager implements IMethodStateReactor {
 						//Re-create the painter
 						this.processVariableAndCreatePainter(var, parentPainter, waitingList);//, var.getStackFrame(), waitingList);
 						continue;
-					}
-					else {
+					}	else {
 						ProViz.errprintln("VPM: painter has less than one owner variable");
 					}
 				}
-			}
-			else if (cVar.getEventType() == Change.DIFF_OBJECT_DIFF_TYPE) {
+			}	else if (cVar.getEventType() == Change.DIFF_OBJECT_DIFF_TYPE) {
 	//TODO the assumption is previous painter may not be able to visualize the new type of object
 				Painter parentPainter = previousPainter.getParent();
 	//Previous painter is painting other variables as well. So dis-associate it with var and re-create a new
@@ -909,8 +905,7 @@ public class VizPainterManager implements IMethodStateReactor {
 			for (IVizVariable field : var.getFields()) {
 				this.deallocateVariable(field, /*removedPainter,*/ waitingList);
 			}
-		}
-		else {
+		}	else {
 	//The variable did not have a painter. So continue with deallocating the variable's fields
 			for (IVizVariable field : var.getFields()) {
 				this.deallocateVariable(field, /*null,*/ waitingList);
@@ -1040,8 +1035,7 @@ public class VizPainterManager implements IMethodStateReactor {
 				}
 				if (target == null) {
 					ProViz.errprintln("Painter has a bad dependency for instance variable: " + dependingVar);
-				}
-				else {
+				} else {
 					target.addListener(painter);
 					painter.addEventGenerator(target);
 				}
@@ -1061,14 +1055,12 @@ public class VizPainterManager implements IMethodStateReactor {
 				if (wait != null) {
 	//A waiting list for this variable already exists
 					wait.add(painter);
-				}
-				else { //wait == null
+				} else { //wait == null
 					wait = new ArrayList<Painter>();
 					wait.add(painter);
 					waitingList.put(dependingVar, wait);
 				}
-			}
-			else { //variable != null
+			} else { //variable != null
 //The dependent variable is already there, so add this painter as its listener
 				variable.addListener(painter);
 				painter.addEventGenerator(variable);
@@ -1147,13 +1139,11 @@ public class VizPainterManager implements IMethodStateReactor {
 							return parent.getFieldPainter(var.getName());
 						}
 					}
-				}
-				else {
+				} else {
 					return this.getPainterByUniqueID(var.getUniqueObjectID());
 				}
 			}
-		}
-		else {
+		} else {
 	//TODO If the primitive VizVariable is a new variable of a field, this won't work
 			rv = this.primitivePainters.get(var);
 		}
@@ -1256,8 +1246,7 @@ public class VizPainterManager implements IMethodStateReactor {
 	//Canvas is set in the creation of the new painter
 		if (var != null) {
 			//TODO newPainter = PainterFactory.createCustomPainter(newPainterName, var, current.getCanvas());
-		}
-		else {
+		} else {
 			newPainter = PainterFactory.createCustomPainter(newPainterName, current.getVariable(), current.getCanvas());
 		}
 		if (newPainter == null) {
@@ -1311,8 +1300,7 @@ public class VizPainterManager implements IMethodStateReactor {
 				for (IVizVariable vvar : newPainter.getVariablesToThisPainter()) {
 					this.primitivePainters.put(vvar, newPainter);
 				}
-			}
-			else {
+			} else {
 				this.removePainterFromUniqueIDTable(current);
 				this.addToUniqueIDTable(newPainter);
 			}
