@@ -605,7 +605,9 @@ public abstract class AbstractVizExplorer extends ViewPart {
 		Association parent = input.getParent();
 		this.selected = parent;
 	//TODO 9/9/10 Need to handle when parent.getParent is a VariableViz
+	
 		if (parent instanceof VariableViz && parent.getParent() instanceof MethodViz) {
+	//parent is a local variable
 			MethodViz method = (MethodViz) parent.getParent();
 			TypeViz type = (TypeViz) method.getParent();
 			Collection<FieldViz> fields = type.getFieldVizes();

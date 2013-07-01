@@ -62,7 +62,6 @@ public class PainterFactory {
 			TypeViz typeViz = VizMapModel.getInstance().findTypeViz_runtime(actualType);
 			if (typeViz != null && typeViz.getVizCount() > 0) {
 				vizName = typeViz.getCurrentViz().getPainterName();
-	//Added 10.09.14
 				if (startLoc == null) {
 					startLoc = typeViz.getCurrentViz().getStartingLocation();
 				}

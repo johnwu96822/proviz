@@ -11,7 +11,7 @@ import viz.ProViz;
  * @author JW
  *
  */
-public class VariableVizBase extends Association {
+public abstract class VariableVizBase extends Association {
 	private String type = null;
 	/** The associations for different actual types. */
   private Map<String, TypeViz> actualTypeVizes = null;

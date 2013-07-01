@@ -11,7 +11,6 @@ import viz.model.MethodViz;
 import viz.model.ParamViz;
 import viz.model.TypeViz;
 import viz.model.VariableViz;
-import viz.model.VariableVizBase;
 import viz.model.Visualization;
 
 /**

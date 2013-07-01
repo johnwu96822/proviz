@@ -12,13 +12,14 @@ import viz.model.FieldViz;
 import viz.model.MethodViz;
 import viz.model.TypeViz;
 import viz.model.VariableViz;
+import viz.model.VariableVizBase;
 import viz.model.Visualization;
 import viz.model.VizMapModel;
 
 public class CheckboxContentProvider implements IStructuredContentProvider {
 
 	private Object[] currentElements = null;
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public Object[] getElements(Object inputElement) {
 		//TODO local variables inside static methods should not be able to listen to instance variables
@@ -30,7 +31,7 @@ public class CheckboxContentProvider implements IStructuredContentProvider {
 				type = (TypeViz) method.getParent();
 				Collection<FieldViz> fields = type.getFieldVizes();
 				Collection<VariableViz> vars = method.getVariableVizes();
-				ArrayList list = new ArrayList();
+				ArrayList<VariableVizBase> list = new ArrayList<VariableVizBase>();
 				for (FieldViz fv : fields) {
 					list.add(fv);
 				}
@@ -46,7 +47,7 @@ public class CheckboxContentProvider implements IStructuredContentProvider {
 			else if (parent instanceof FieldViz) {
 				type = (TypeViz) parent.getParent();
 				Collection<FieldViz> fields = type.getFieldVizes();
-				ArrayList list = new ArrayList();
+				ArrayList<VariableVizBase> list = new ArrayList<VariableVizBase>();
 				for (FieldViz fv : fields) {
 					if (fv != parent) {
 						list.add(fv);
@@ -64,12 +65,11 @@ public class CheckboxContentProvider implements IStructuredContentProvider {
 		return new Object[0];
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void fillSuperClassFields(ArrayList list, TypeViz typeViz) {
+	private void fillSuperClassFields(ArrayList<VariableVizBase> list, TypeViz typeViz) {
 		System.out.println("fillSuperClassFields");
 		try {
-			Class current = Class.forName(typeViz.getFullName());
-			Class superClass = current.getSuperclass();
+			Class<?> current = Class.forName(typeViz.getFullName());
+			Class<?> superClass = current.getSuperclass();
 			System.out.println("Checking super class: " + superClass.getName());
 			if (superClass.getName().equals("java.lang.Object")) {
 				return;
