@@ -596,52 +596,60 @@ public abstract class AbstractVizExplorer extends ViewPart {
 	}
 	
 	/**
-	 * @param input
+	 * 
+	 * @param selectedViz
 	 */
-	protected void loadCheckboxViewer(Visualization input) {
-		if (input == null) {
-			return;
-		}
-		Association parent = input.getParent();
-		this.selected = parent;
+	protected void loadCheckboxViewer(Visualization selectedViz) {
+		if (selectedViz == null) { return; }
+		Association selectedVar = selectedViz.getParent();
+		this.selected = selectedVar;
 	//TODO 9/9/10 Need to handle when parent.getParent is a VariableViz
 	
-		if (parent instanceof VariableViz && parent.getParent() instanceof MethodViz) {
-	//parent is a local variable
-			MethodViz method = (MethodViz) parent.getParent();
+		if (selectedVar instanceof VariableViz && selectedVar.getParent() instanceof MethodViz) {
+	//selectedVar is a local variable, i.e., the selection is a local variable's painter
+	//Candidate listeners for a local variable's painters are:
+	// 1. Fields of selectedVar's class
+	// 2. Other local variables within selectedVar's method
+	// 3. Fields of selectedVar's super classes
+			MethodViz method = (MethodViz) selectedVar.getParent();
 			TypeViz type = (TypeViz) method.getParent();
 			Collection<FieldViz> fields = type.getFieldVizes();
 			Collection<VariableViz> vars = method.getVariableVizes();
+	// 1.
 			for (FieldViz fv : fields) {
 				checkboxViewer.add(IVizVariable.THIS_PREFIX + fv.getSimpleName());
 			}
+	// 2.
 			for (VariableViz vv : vars) {
-				if (vv != parent) {
+				if (vv != selectedVar) {
 					checkboxViewer.add(vv.getSimpleName());
 				}
 			}
+	// 3.
 			this.fillSuperClassFields(type);
-		}
-		else if (parent instanceof FieldViz) {
-			if (parent.getParent() instanceof TypeViz) {
-				TypeViz type = (TypeViz) parent.getParent();
+		}	else if (selectedVar instanceof FieldViz) {
+  //selectedVar is a field variable, i.e., the selection is a field variable's painter
+  //Candidate listeners for a local variable's painters are:
+  // 1. Fields of selectedVar's class
+  // 2. Other local variables within selectedVar's method
+  // 3. Fields of selectedVar's super classes
+			if (selectedVar.getParent() instanceof TypeViz) {
+				TypeViz type = (TypeViz) selectedVar.getParent();
 				Collection<FieldViz> fields = type.getFieldVizes();
 				for (FieldViz fv : fields) {
-					if (fv != parent) {
+					if (fv != selectedVar) {
 						checkboxViewer.add(IVizVariable.THIS_PREFIX + fv.getSimpleName());
 					}
 				}
 				this.fillSuperClassFields(type);
 			}
-		}
-		else if (parent instanceof TypeViz) {
-			Collection<FieldViz> fields = ((TypeViz) parent).getFieldVizes();
+		} else if (selectedVar instanceof TypeViz) {
+			Collection<FieldViz> fields = ((TypeViz) selectedVar).getFieldVizes();
 			for (FieldViz fv : fields) {
 				checkboxViewer.add(fv.getSimpleName());
 			}
-			this.fillSuperClassFields((TypeViz) parent);
-		}
-		else {
+			this.fillSuperClassFields((TypeViz) selectedVar);
+		} else {
 			this.selected = null;
 			return;
 		}
@@ -650,11 +658,11 @@ public abstract class AbstractVizExplorer extends ViewPart {
 			checkboxViewer.setChecked(depending, true);
 		}
 	}
-	@SuppressWarnings("unchecked")
+	
 	private void fillSuperClassFields(TypeViz typeViz) {
 		try {
-			Class current = Class.forName(typeViz.getFullName());
-			Class superClass = current.getSuperclass();
+			Class<?> current = Class.forName(typeViz.getFullName());
+			Class<?> superClass = current.getSuperclass();
 			ProViz.println("Checking super class: " + superClass.getName());
 			if (superClass.getName().equals("java.lang.Object")) {
 				return;
