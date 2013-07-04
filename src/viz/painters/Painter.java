@@ -705,6 +705,8 @@ public abstract class Painter extends AbstractPainter implements IValueChangedLi
 	}
 
 	/**
+	 * Certain painters do all the painting without the need of field painters.
+	 * Then they should return false for this method for efficiency.
 	 * @return the shouldCreateFieldPainters
 	 */
 	public boolean shouldCreateFieldPainters() {

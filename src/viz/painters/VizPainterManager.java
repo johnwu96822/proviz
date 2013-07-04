@@ -36,14 +36,19 @@ import viz.views.util.IConnectable;
  *
  */
 public class VizPainterManager implements IMethodStateReactor {
-	private Map<IVizVariable, Painter> primitivePainters = new Hashtable<IVizVariable, Painter>();
-	private Map<VizStackFrame, Hashtable<String, ArrayList<Painter>>> dependencyWaitingLists = 
-		new Hashtable<VizStackFrame, Hashtable<String, ArrayList<Painter>>>();
+	private Map<IVizVariable, Painter> primitivePainters = 
+			new Hashtable<IVizVariable, Painter>();
 	
-	private Map<VizStackFrame, MethodPainter> methodPainters = new Hashtable<VizStackFrame, MethodPainter>();
+	private Map<VizStackFrame, Hashtable<String, ArrayList<Painter>>> dependencyWaitingLists = 
+			new Hashtable<VizStackFrame, Hashtable<String, ArrayList<Painter>>>();
+	
+	private Map<VizStackFrame, MethodPainter> methodPainters = 
+			new Hashtable<VizStackFrame, MethodPainter>();
 	
 	//Map<unique object ID, list of painters that all point to the ID>
-	private Map<String, List<Painter>> uniqueObjectTable = new Hashtable<String, List<Painter>>();
+	private Map<String, List<Painter>> uniqueObjectTable = 
+			new Hashtable<String, List<Painter>>();
+	
 	private static final String THIS_VARIABLE = "this";
 	private static final String NULL_ID = "-1";
 	//private boolean notRefreshingAll = true;
@@ -403,13 +408,13 @@ public class VizPainterManager implements IMethodStateReactor {
 	}
 
 	/**
-	 * Register this painter as listener on its fields
+	 * Register ONLY this painter as listener on its fields. No recursive call to
+	 * descendants of the fields.
 	 * @param painter
 	 */
 	private void registerFieldListeners(Painter painter) {		
-		if (painter.getDependentVars() == null || !painter.getVariable().hasField()) {
-			return;
-		}
+		if (painter == null || painter.getDependentVars() == null || 
+				!painter.getVariable().hasField()) { return; }
 		for (String dependingVar : painter.getDependentVars()) {
 			if (dependingVar.charAt(0) == '*') {
 				String fieldName = dependingVar.substring(1);
@@ -418,36 +423,42 @@ public class VizPainterManager implements IMethodStateReactor {
 				painter.addEventGenerator(field);
 			}
 		}
-}
+	}
 
 	/**
+	 * Only object painters will be added to the unique ID table.
 	 * @param painter
 	 */
 	private void addToUniqueIDTable(Painter painter) {
+		if (painter.getVariable().isPrimitive() || painter.getVariable().isNull()) {
+			return;
+		}
 		if (this.uniqueObjectTable.containsKey(painter.getUniqueID())) {
+	//The key already exists, so append this painter to the list for this key
 			this.uniqueObjectTable.get(painter.getUniqueID()).add(painter);
 		}	else {
+	//The key does not exist, so create a new (key, painter list) pair and add it
+	//to the table
 			List<Painter> list = new ArrayList<Painter>();
 			list.add(painter);
 			this.uniqueObjectTable.put(painter.getUniqueID(), list);
 		}
 	}
 	
-	
 	/**
-	 * Binds the variable and the painter which points to the same object without processing
-	 * and creating new painters.
+	 * VOO: Binds the variable and the painter which points to the same object without 
+	 * processing and creating new painters. As a result, multiple variables will point
+	 * to the same painter. Only for object painters.
 	 * @param var
 	 * @param painter
 	 */
 	private void bindVariableAndPainter(IVizVariable var, Painter painter) {
+		if (var.isPrimitive() || var.isNull()) { return; }
 		painter.addVariableToThisPainter(var);
-		if (var.isObject()) {
-			for (IVizVariable field : var.getFields()) {
-				Painter fieldPainter = painter.getFieldPainter(field.getName());
-				if (fieldPainter != null) {
-					this.bindVariableAndPainter(field, fieldPainter);
-				}
+		for (IVizVariable field : var.getFields()) {
+			Painter fieldPainter = painter.getFieldPainter(field.getName());
+			if (fieldPainter != null) {
+				this.bindVariableAndPainter(field, fieldPainter);
 			}
 		}
 	}
@@ -473,42 +484,47 @@ public class VizPainterManager implements IMethodStateReactor {
 			throws MethodDetectionFailException {
 		MethodPainter mPainter = null;
 		if (VizMapModel.getInstance().findMethodViz_runtime(previousMethodID) == null) {
-			//Previous method is not in the Viz model, so no stack was created for it.
+			//Previous method is not in the Viz model, so no stack was created for it. Do nothing
 			//System.out.println("VPM: Previous method not in the Viz model. Do nothing.");
-			//So do nothing
 		} else {
 			if (!previousStackFrame.getMethodID().equals(previousMethodID)) {
 				throw new MethodDetectionFailException("VPM: Method ID not matching the previous one! " +
 						"Previous could be a library method call.");
 			}
+	//1. Call methodReturned() on the previous method painter
 			mPainter = this.methodPainters.remove(previousStackFrame);
 			if (mPainter != null) {
 				mPainter.methodReturned();
 			}
 			ProViz.getInstance().popMethodDisplay();
-	//2.8.10 CANNOT call same method on previous stack frame
+			//2.8.10 CANNOT call same method on previous stack frame
 			//Map<String, Painter> painters = this.painterStackFrames.get(previousStackFrame);
 			//Hashtable<String, ArrayList<Painter>> waitTable = this.dependencyWaitingListStack.peek();
+	//2. Fire REMOVED event on variables in the previous stack frame
 			for (IVizVariable var : previousStackFrame.getVariables()) {
 				var.fireEvent(Change.REMOVED);
 			}
-	//All variables to be removed
+	//3. Deallocate all variables in the previous stack frame
 			for (IVizVariable var : previousStackFrame.getVariables()) {
 				this.deallocateVariable(var, null);//, null);
 			}
+	//Remove the previous stack frame from the waiting list
 			if (this.dependencyWaitingLists.remove(previousStackFrame) == null) {
 				ProViz.errprintln("VPM: waiting list failed to remove previous stack frame");
 			}
 	//09.08.15 - process changed aliasing variables in the previous (now current) stack
-	//09.08.31 - commented out because no more updating the top stack after the return
+	//09.08.31 - commented out because no need updating the top stack after the return
 /*			VizRuntime vRuntime = VizRuntime.getInstance();
 			this.processChangedVariables(vRuntime.getChangedVars(), vRuntime.getTopStackFrame(), 
 					this.dependencyWaitingLists.get(vRuntime.getTopStackFrame()));*/
 		}
+	//4. Step the animation
 		ProViz.getAnimationController().stepAnimation();
+	//5. Destroy the previous method painter
 		if (mPainter != null) {
 			mPainter.destroy();
 		}
+	//6. Inform the current method painter, if any, that the previous method has returned
 		VizStackFrame currentTop = ProViz.getInstance().getVizRuntime().getTopStackFrame();
 		if (currentTop != null) {
 		  MethodPainter currentMP = this.methodPainters.get(currentTop.getMethodID());
@@ -528,7 +544,6 @@ public class VizPainterManager implements IMethodStateReactor {
 	 */
 	private void removePainterFromWaitingList(Painter removedPainter,
 			Hashtable<String, ArrayList<Painter>> waitingList) {
-		//Remove the de-allocated painter from the wait list
 		if (waitingList != null && removedPainter.getDependentVars() != null) {
 			for (String varName : removedPainter.getDependentVars()) {
 				ArrayList<Painter> tempList = waitingList.get(varName);
@@ -542,7 +557,7 @@ public class VizPainterManager implements IMethodStateReactor {
 		} //end if
 	} //end removePainterFromWaitingList
 
-	/* Refreshes all stack frames by using the new method call.
+	/* Refreshes all stack frames by reconstructing with newMethod().
 	 * @see viz.runtime.IMethodStateReactor#refreshAllStackFrames(viz.runtime.VizStackFrame[])
 	 */
 	@Override
