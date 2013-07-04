@@ -321,9 +321,11 @@ public abstract class AbstractVizExplorer extends ViewPart {
 	private void move(boolean up) {
 		try {
 			IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+	//Only move when there is a single selected element
 			if (selection.size() != 1) {
 				return;
 			}
+	//The selected element must be a painter; cannot be a Viz object
 			Object obj = selection.getFirstElement();
 			if (!(obj instanceof Visualization)) {
 				return;
@@ -339,8 +341,7 @@ public abstract class AbstractVizExplorer extends ViewPart {
 					treeViewer.refresh(parentViz);
 					//treeViewer.expandToLevel(viz, 0);
 				}
-			}
-			else {
+			} else {
 	//Move down operation, so the order of the selected VC must be 2 less than the number
 	//of VCs in the parent viz.
 				if (order < parentViz.getVizCount() - 1) {
@@ -353,20 +354,20 @@ public abstract class AbstractVizExplorer extends ViewPart {
 			//treeViewer.getRawChildren(parentViz);
 			//Object[] children = provider.getChildren(asso);
 			//treeViewer.setSelection(new StructuredSelection(children[order - 1]), true);
-		} //end try
-		catch (Exception e) {
+		} catch (Exception e) {
 			ProViz.errprintln(e);
 		} //end catch
 	} //end move
 
 	/**
-	 * Removes one selected top-level TypeViz from Vizes.
+	 * Removes a root TypeViz from Vizes.
 	 * @param tv
 	 * @return
 	 */
 	public abstract boolean removeTopLevelTypeViz(TypeViz tv);
 	
 	/**
+	 * Removes the selected elements from the explorer
 	 */
 	protected void remove() {
 		IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
@@ -375,56 +376,45 @@ public abstract class AbstractVizExplorer extends ViewPart {
 			if (obj instanceof Visualization) {
 				parent = ((Visualization) obj).getParent();
 				parent.remove((Visualization) obj);
-			}
-			else {
+			}	else {
 				if (obj instanceof Association) {
 					parent = ((Association) obj).getParent();
 					if (obj instanceof TypeViz) {
 						TypeViz tv = (TypeViz) obj;
 						if (parent == null) {
-			//tv is the root node.
+	//tv is the root node.
 							removeTopLevelTypeViz(tv);
-						}
-						else {
-			//tv is an inner class TypeViz or an actual type
+						} else {
+	//tv is an inner class TypeViz or an actual type.
+	//So "parent" could be a type, a method, or a variable 
 							if (parent instanceof TypeViz) {
 								((TypeViz) parent).removeInnerTypeViz(tv);
-							}
-							else if (parent instanceof MethodViz) {
+							} else if (parent instanceof MethodViz) {
 								((MethodViz) parent).removeInnerTypeViz(tv);
-							}
-							else if (parent instanceof VariableVizBase) {
+							} else if (parent instanceof VariableVizBase) {
 								((VariableVizBase) parent).removeActualType(tv);
-							}
-							else {
-								ProViz.errprintln("Invalid parent for TypeViz");
+							} else {
+								ProViz.errprintln("Invalid parent type for TypeViz: " + tv.getSimpleName());
 							}
 						}
-					}
-					else if (obj instanceof FieldViz) {
+					} else if (obj instanceof FieldViz) {
 						if (parent instanceof TypeViz) {
 							((TypeViz) parent).removeFieldViz((FieldViz) obj);
-						}
-						else if (parent instanceof VariableVizBase) {
+						}	else if (parent instanceof VariableVizBase) {
 							((VariableVizBase) parent).removeFieldViz((FieldViz) obj);
-						}
-						else {
+						}	else {
 							ProViz.errprintln("Invalid parent for FieldViz");
 						}
-					}
-					else if (obj instanceof MethodViz) {
+					}	else if (obj instanceof MethodViz) {
 						if (parent instanceof TypeViz) {
 							((TypeViz) parent).removeMethodViz((MethodViz) obj);
-						}
-						else {
+						}	else {
 							ProViz.errprintln("Invalid parent for MethodViz");
 						}				
-					}
-					else if (obj instanceof VariableViz) {
+					} else if (obj instanceof VariableViz) {
 						if (parent instanceof MethodViz) {
 							((MethodViz) parent).removeVariableViz((VariableViz) obj);
-						}
-						else {
+						} else {
 							System.err.println("Invalid parent for VairableViz");
 						}	//end else
 					} //end else if
@@ -432,19 +422,10 @@ public abstract class AbstractVizExplorer extends ViewPart {
 			} //end else
 			if (parent != null) {
 				getTreeViewer().refresh(parent);
-			}
-			else {
+			}	else {
 				updateAll();
 			}
 		} //end for
-/*		if (selection.size() != 1) {
-			return;
-		}
-		Object obj = selection.getFirstElement();
-		if (!(obj instanceof TypeViz)) {
-			return;
-		}
-		Vizes.getInstance().remove((TypeViz) obj);*/
 	}
 
 	/**
@@ -459,7 +440,7 @@ public abstract class AbstractVizExplorer extends ViewPart {
 	}
 	
 	/**
-	 * Initializes listeners.
+	 * Initializes a selection changed listener and a double click listener.
 	 * @param viewer
 	 */
   protected void initListeners(TreeViewer viewer) {
@@ -607,7 +588,7 @@ public abstract class AbstractVizExplorer extends ViewPart {
 	
 		if (selectedVar instanceof VariableViz && selectedVar.getParent() instanceof MethodViz) {
 	//selectedVar is a local variable, i.e., the selection is a local variable's painter
-	//Candidate listeners for a local variable's painters are:
+	//Candidate listeners for a root painter are:
 	// 1. Fields of selectedVar's class
 	// 2. Other local variables within selectedVar's method
 	// 3. Fields of selectedVar's super classes
@@ -629,10 +610,9 @@ public abstract class AbstractVizExplorer extends ViewPart {
 			this.fillSuperClassFields(type);
 		}	else if (selectedVar instanceof FieldViz) {
   //selectedVar is a field variable, i.e., the selection is a field variable's painter
-  //Candidate listeners for a local variable's painters are:
-  // 1. Fields of selectedVar's class
-  // 2. Other local variables within selectedVar's method
-  // 3. Fields of selectedVar's super classes
+  //Candidate listeners for a field painter are:
+  // 1. Peer fields in the same class as selectedVar
+	// 2. Fields of selectedVar's super classes
 			if (selectedVar.getParent() instanceof TypeViz) {
 				TypeViz type = (TypeViz) selectedVar.getParent();
 				Collection<FieldViz> fields = type.getFieldVizes();
@@ -644,6 +624,10 @@ public abstract class AbstractVizExplorer extends ViewPart {
 				this.fillSuperClassFields(type);
 			}
 		} else if (selectedVar instanceof TypeViz) {
+  //selectedVar is a class, not a variable
+  //Candidate listeners for a class painter are:
+  // 1. Fields of this class
+  // 2. Fields of selectedVar's super classes
 			Collection<FieldViz> fields = ((TypeViz) selectedVar).getFieldVizes();
 			for (FieldViz fv : fields) {
 				checkboxViewer.add(fv.getSimpleName());
@@ -659,6 +643,12 @@ public abstract class AbstractVizExplorer extends ViewPart {
 		}
 	}
 	
+	/**
+	 * Given a TypeViz, finds its superclass and loads the superclass
+	 * fields to the checkBoxViewer. Do this recursively until it reaches
+	 * "java.lang.Object"
+	 * @param typeViz
+	 */
 	private void fillSuperClassFields(TypeViz typeViz) {
 		try {
 			Class<?> current = Class.forName(typeViz.getFullName());
@@ -668,30 +658,41 @@ public abstract class AbstractVizExplorer extends ViewPart {
 				return;
 			}
 			TypeViz type = VizMapModel.getInstance().findTypeViz(superClass.getName());
-			ProViz.println(type + "");
+			ProViz.println(type.getFullName());
 			if (type != null) {
 				for (FieldViz fv : type.getFieldVizes()) {
-					ProViz.println(type.getSimpleName() + "." + fv.getSimpleName());
+					//ProViz.println(type.getSimpleName() + "." + fv.getSimpleName());
 					checkboxViewer.add(type.getSimpleName() + "." + fv.getSimpleName());
 				}
 				fillSuperClassFields(type);
 			}
 		} catch (ClassNotFoundException e) {
-			//ProViz.errprintln("Super class cannot be found: " + e.getMessage());
+			ProViz.errprintln("Super class of " + typeViz.getSimpleName() + " cannot be found: " + e.getMessage());
 		}
 	}
+	
+	/**
+	 * Removes all in the check box viewer
+	 */
 	protected void clearCheckBoxViewer() {
 		this.checkboxViewer.setInput(null);
 	}
 
+	/**
+	 * A listener react to the check/uncheck events in the check box viewer
+	 */
 	class CheckBoxListener implements ICheckStateListener {
+		/* 
+		 * Adds the checked element in the check box viewer to the selected
+		 * painter in the Viz explorer. 
+		 * @see org.eclipse.jface.viewers.ICheckStateListener#checkStateChanged(org.eclipse.jface.viewers.CheckStateChangedEvent)
+		 */
 		@Override
 		public void checkStateChanged(CheckStateChangedEvent event) {
 			if (selected != null) {
 				if (event.getChecked()) {
 					selected.addDependingVariable(event.getElement().toString());
-				}
-				else {
+				} else {
 					selected.removeDependingVariable(event.getElement().toString());
 				}
 			}

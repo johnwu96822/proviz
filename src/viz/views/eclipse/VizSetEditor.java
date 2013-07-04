@@ -53,7 +53,7 @@ public class VizSetEditor extends AbstractVizExplorer {
 	
 	private Action expandAllPainters;
 	
-	/* (non-Javadoc)
+	/* This will load the "vizlib.xml" library file when created.
 	 * @see viz.views.eclipse.AbstractVizExplorer#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@Override
@@ -68,44 +68,34 @@ public class VizSetEditor extends AbstractVizExplorer {
 	 */
 	@Override
 	public void loadViz() {
-			/*if (firstLoad) {
-	//Load vizlib.xml first before loading the file, in case the user's file has types that
-	//can override what's in vizlib.xml
-				this.loadLib();
-				firstLoad = false;
-			}*/
 		setStatusLine("");
-	//Try load from Java source code
-			IPath javaPath = ASTAnnotationToViz.eclipseActiveEditorFillVizes();
-			if (javaPath != null) {
-				setStatusLine(javaPath.lastSegment() + " loaded!");
-				updateAll();
-			}
-	//If not, try load from XML
-			else {
-				try {
-					IPath path = EclipseResourceUtil.getActiveEditorFilePath();
-					TypeViz[] tvs = XMLToViz.loadVizFromXmlFile(path);
-					if (tvs != null) {
-						for (TypeViz tv : tvs) {
-							VizMapModel.getInstance().addOrReplace(tv, false);
-							//Vizes.getInstance().addTypeToFile(path.toOSString(), tv);
-						}
-						updateAll();
-						setStatusLine(path.lastSegment() + " loaded!");
+  //Try loading from Java source code
+		IPath javaPath = ASTAnnotationToViz.eclipseActiveEditorFillVizes();
+		if (javaPath != null) {
+			setStatusLine(javaPath.lastSegment() + " loaded!");
+			updateAll();
+		}	else {
+	//If not, the active editor may be XML. Try load the XML
+			try {
+				IPath path = EclipseResourceUtil.getActiveEditorFilePath();
+				TypeViz[] tvs = XMLToViz.loadVizFromXmlFile(path);
+				if (tvs != null) {
+					for (TypeViz tv : tvs) {
+						VizMapModel.getInstance().addOrReplace(tv, false);
+						//Vizes.getInstance().addTypeToFile(path.toOSString(), tv);
 					}
-					else {
-						showMessage("File contains no Viz annotation");
-						setStatusLine("File contains no Viz annotation");
-					}
+					updateAll();
+					setStatusLine(path.lastSegment() + " loaded!");
+				} else {
+					showMessage("File contains no Viz annotation");
+					setStatusLine("File contains no Viz annotation");
 				}
-				catch (XmlException e) {
-					ProViz.errprintln(e);
-					showMessage("Error parsing the file: " + e.getMessage());
-					setStatusLine(e.getMessage());
-				}
+			} catch (XmlException e) {
+				ProViz.errprintln(e);
+				showMessage("Error parsing the file: " + e.getMessage());
+				setStatusLine(e.getMessage());
 			}
-
+		}
 	} //end loadViz
 
 	/* (non-Javadoc)
@@ -587,11 +577,9 @@ class IntegerValidator implements IInputValidator {
 	public String isValid(String newText) {
 		try {
 			Integer.parseInt(newText);
-		}
-		catch (NumberFormatException e) {
+		}	catch (NumberFormatException e) {
 			return "Enter integer only";
 		}
 		return null;
 	}
-	
 }
