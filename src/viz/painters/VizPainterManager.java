@@ -69,7 +69,7 @@ public class VizPainterManager implements IMethodStateReactor {
 	}
 	
 	/* In the event of a new method call:
-	 * (1) If the parent method has a method painter, notify it
+	 * (1) If the parent method has a method painter, notify it of the new method's invocation
 	 * (2) Create a dependency waiting list for this method
 	 * (3) Process this method's variables, i.e., parameters and 
 	 *     fire "NEW" events on these variables
@@ -87,7 +87,8 @@ public class VizPainterManager implements IMethodStateReactor {
 		if (prevStackFrame != null) {
 		  MethodPainter mp = methodPainters.get(prevStackFrame);
 		  if (mp != null) {
-		    mp.handleMethodCall(topFrame.getMethodID());
+		    //mp.handleMethodCall(topFrame.getMethodID());
+		    this.notifyMethodEvent(mp, topFrame.getMethodID(), Change.METHOD_INVOKED, true);
 		  }
 		}
 		ProViz.getInstance().pushMethodDisplay(topFrame.getMethodID());
@@ -529,7 +530,8 @@ public class VizPainterManager implements IMethodStateReactor {
 		if (currentTop != null) {
 		  MethodPainter currentMP = this.methodPainters.get(currentTop.getMethodID());
 		  if (currentMP != null) {
-		    currentMP.handleMethodReturned(previousMethodID);
+		    //currentMP.handleMethodReturned(previousMethodID);
+		    this.notifyMethodEvent(currentMP, previousMethodID, Change.METHOD_RETURNED, false);
 		  }
 		}
 		return previousStackFrame;
@@ -574,6 +576,19 @@ public class VizPainterManager implements IMethodStateReactor {
 		//this.notRefreshingAll = true;
 	}
 	
+	private void notifyMethodEvent(MethodPainter mPainter, String methodID, Change change, boolean isBefore) {
+		MethodAction action = null; 
+		if (isBefore) {
+			action = mPainter.getBeforeAction(methodID, change);
+		}	else {
+			action = mPainter.getAfterAction(methodID, change);
+		}
+		if (action != null) {
+			AnimationController.screenModified = true;
+			action.run(methodID);
+		}
+	}
+	
 	/**
 	 * Notifies a method painter that there is a variable change, and if the method painter has
 	 * a corresponding action for this variable and its type of change, run the action.
@@ -583,14 +598,16 @@ public class VizPainterManager implements IMethodStateReactor {
 	 */
 	private void notifyMethodPainter(IVizVariable var, Change change, MethodPainter mPainter, boolean isBefore) {
 		String name = var.getName();
+	//Prepend the instance variables of this class with "this." so that it's easier
+	//to distinguish
 		if (!var.isLocalVariable() && var.getParent().getName().equals(THIS_VARIABLE)) {
 			name = "this." + name;
 		}
 		MethodAction action = null; 
 		if (isBefore) {
-			action = mPainter.getAndRemoveBeforeAction(name, change);
+			action = mPainter.getBeforeAction(name, change);
 		}	else {
-			action = mPainter.getAndRemoveAfterAction(name, change);
+			action = mPainter.getAfterAction(name, change);
 		}
 		if (action != null) {
 			AnimationController.screenModified = true;

@@ -76,15 +76,13 @@ public abstract class MethodPainter extends AbstractPainter {
 	 * <strong>BEFORE</strong> the de-allocated painters are updated, so this method can work with variable 
 	 * painters in the returned method.
 	 */
-	public void methodReturned() {		
-	}
+	public void methodReturned() {}
 	
 	/**
 	 * Does a static paint of what the method does. This is used when animation check box is unchecked.
 	 * Default implementation is doing nothing.
 	 */
-	public void paintMethod() {
-	}
+	public void paintMethod() {}
 	
 	public Painter getParameterPainter(String name) {
 		Painter rv = null;
@@ -98,6 +96,11 @@ public abstract class MethodPainter extends AbstractPainter {
 		return rv;
 	}
 	
+	/**
+	 * Gets a parameter variable by name
+	 * @param name
+	 * @return
+	 */
 	public IVizVariable getParameter(String name) {
 		return this.getStackFrame().getVariable(name);
 	}
@@ -112,16 +115,14 @@ public abstract class MethodPainter extends AbstractPainter {
 		List<MethodAction> mActions = null;
 		if (this.beforeActions == null) {
 			this.beforeActions = new TreeMap<String, List<MethodAction>>();
-		}
-		else {
+		}	else {
 			mActions = this.beforeActions.get(variableName);
 		}
 		if (mActions == null) {
 			mActions = new LinkedList<MethodAction>();
 			mActions.add(action);
 			this.beforeActions.put(variableName, mActions);
-		}
-		else {
+		}	else {
 			mActions.add(action);
 		}
 	}
@@ -152,12 +153,14 @@ public abstract class MethodPainter extends AbstractPainter {
 	}
 	
 	/**
-	 * TODO 8/27/10 Does not remove for now
+	 * Variable names of instance variables are prefixed with "this."
+	 * 8/27/10 Does not remove for now
+	 * 7/13/13 Why remove??
 	 * @param variableName
 	 * @param changeEvent
 	 * @return
 	 */
-	public MethodAction getAndRemoveBeforeAction(String variableName, Change changeEvent) {
+	public MethodAction getBeforeAction(String variableName, Change changeEvent) {
 		if (this.beforeActions != null) {
 			List<MethodAction> mActions = this.beforeActions.get(variableName);
 			if (mActions != null) {
@@ -168,9 +171,9 @@ public abstract class MethodPainter extends AbstractPainter {
 						break;
 					}
 				}
-				if (rv != null) {
+				//if (rv != null) {
 					//mActions.remove(rv);
-				}
+				//}
 				return rv;
 			}
 		}
@@ -184,7 +187,7 @@ public abstract class MethodPainter extends AbstractPainter {
 	 * @param changeEvent
 	 * @return
 	 */
-	public MethodAction getAndRemoveAfterAction(String variableName, Change changeEvent) {
+	public MethodAction getAfterAction(String variableName, Change changeEvent) {
 		if (this.afterActions != null) {
 			List<MethodAction> mActions = this.afterActions.get(variableName);
 			if (mActions != null) {
@@ -195,9 +198,9 @@ public abstract class MethodPainter extends AbstractPainter {
 						break;
 					}
 				}
-				if (rv != null) {
+				//if (rv != null) {
 					//mActions.remove(rv);
-				}
+				//}
 				return rv;
 			}
 		}
@@ -205,6 +208,7 @@ public abstract class MethodPainter extends AbstractPainter {
 	}
 	
 	/**
+	 * Gets the stack frame that this MP belongs to
 	 * @return the stackFrame
 	 */
 	public VizStackFrame getStackFrame() {
@@ -240,6 +244,8 @@ public abstract class MethodPainter extends AbstractPainter {
 	}
 
   /**
+   * @deprecated Replaced by using MethodAction just like handling variable changes
+   * 
    * Any method invoked within this method would trigger this method, notifying
    * this method painter that a method is invoked. This method painter can handle
    * different method calls based on their method IDs.
@@ -247,11 +253,9 @@ public abstract class MethodPainter extends AbstractPainter {
    * This method is called before the new method is ever processed, i.e., variable
    * or method painters for the new methods are not created yet.
    * @param methodID
-   */
-  public void handleMethodCall(String methodID) {
-  }
+   *
+  public void handleMethodCall(String methodID) {}
 
-  public void handleMethodReturned(String previousMethodID) {
-
-  }
+  public void handleMethodReturned(String previousMethodID) {}
+  */
 }

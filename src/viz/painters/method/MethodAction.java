@@ -9,7 +9,18 @@ public class MethodAction {
 		this.change = change;
 	}
 	
+	/**
+	 * Actions for variable events should override this method with a IVizVariable 
+	 * parameter
+	 * @param variable
+	 */
 	public void run(IVizVariable variable) {}
+	
+	/**
+	 * Actions for method events should override this method with a string parameter
+	 * @param methodID
+	 */
+	public void run(String methodID) {}
 	
 	/**
 	 * @return the change
